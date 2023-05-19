@@ -3,6 +3,8 @@
 # Files and directories created by pub
 .dart_tool/
 .packages
+.pub-cache/
+.pub/
 build/
 # If you're building an application, you may want to check-in your pubspec.lock
 pubspec.lock
@@ -23,5 +25,21 @@ doc/api/
 *.js.deps
 *.js.map
 
+app.*.symbols  # Symbolication related
+app.*.map.json # Obfuscation related
+
 .flutter-plugins
 .flutter-plugins-dependencies
+
+**/ios/Flutter/.last_build_id
+
+# Miscellaneous
+.DS_Store
+.vscode/
+.idea/
+*.iml
+
+# Android Studio Artifacts
+/android/app/debug
+/android/app/profile
+/android/app/release
