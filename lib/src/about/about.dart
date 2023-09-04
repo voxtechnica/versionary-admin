@@ -24,7 +24,7 @@ class About {
     this.description,
   });
 
-  factory About.message(String message) {
+  factory About.withMessage(String message) {
     return About(
       name: 'Versionary',
       baseDomain: 'versionary.net',
@@ -47,6 +47,6 @@ class About {
 Future<About> aboutApi(AboutApiRef ref) {
   return ref.watch(apiNotifierProvider).when(
       data: (api) => api.client.about(),
-      error: ((e, s) => Future.value(About.message(e.toString()))),
-      loading: () => Future.value(About.message('Loading API Client...')));
+      error: (e, s) => Future.value(About.withMessage(e.toString())),
+      loading: () => Future.value(About.withMessage('Loading API Client...')));
 }

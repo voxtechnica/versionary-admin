@@ -9,7 +9,7 @@ import 'package:versionary/src/toys/things/list_tile.dart';
 class ThingListView extends ConsumerStatefulWidget {
   const ThingListView({super.key});
 
-  static const routeName = '/things';
+  static const routeName = 'things';
 
   @override
   ConsumerState<ThingListView> createState() => ThingListViewState();
@@ -43,7 +43,9 @@ class ThingListViewState extends ConsumerState<ThingListView> {
         ],
       ),
       body: _buildList(),
-      drawer: const NavDrawer(),
+      drawer: const NavDrawer(
+        currentRouteName: ThingListView.routeName,
+      ),
       floatingActionButton: _buildAddThingButton(),
     );
   }
@@ -52,29 +54,6 @@ class ThingListViewState extends ConsumerState<ThingListView> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
-  }
-
-  Drawer _buildDrawer(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          const SizedBox(
-            height: 60,
-            child: DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text('Versionary Menu'),
-            ),
-          ),
-          ListTile(
-            title: const Text('Counter'),
-            onTap: () => context.goNamed('counter'),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildAddThingButton() {

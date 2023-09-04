@@ -1,76 +1,95 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:versionary/src/api/api.dart';
+import 'package:versionary/src/user/user.dart';
+import 'package:versionary/src/routes.dart';
 
 class NavDrawer extends ConsumerStatefulWidget {
-  const NavDrawer({Key? key}) : super(key: key);
+  const NavDrawer({Key? key, required this.currentRouteName}) : super(key: key);
+
+  final String currentRouteName;
 
   @override
   ConsumerState<NavDrawer> createState() => NavDrawerState();
 }
 
 class NavDrawerState extends ConsumerState<NavDrawer> {
+  int? selectedIndex;
+
   @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          _buildDrawerHeader(context),
-          _buildDrawerItem(
-            context,
-            icon: Icons.home,
-            text: 'Home',
-            onTap: () => context.go('/'),
-          ),
-          _buildDrawerItem(
-            context,
-            icon: Icons.info,
-            text: 'Counter',
-            onTap: () => context.goNamed('counter'),
-          ),
-          _buildDrawerItem(
-            context,
-            icon: Icons.list,
-            text: 'Things',
-            onTap: () => context.goNamed('things'),
-          ),
-        ],
-      ),
-    );
+  void initState() {
+    super.initState();
+    for (var i = 0; i < destinations.length; i++) {
+      if (destinations[i].routeName == widget.currentRouteName) {
+        selectedIndex = i;
+        break;
+      }
+    }
   }
 
-  Widget _buildDrawerHeader(BuildContext context) {
-    return DrawerHeader(
-      // decoration: const BoxDecoration(
-      //     color: Theme.of(context).primaryColor,
-      //     ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Versionary',
-            style: Theme.of(context).textTheme.headlineMedium,
+  @override
+  Widget build(BuildContext context) {
+    return ref.watch(apiNotifierProvider).when(
+          data: (api) {
+            return NavigationDrawer(
+              selectedIndex: selectedIndex,
+              onDestinationSelected: (index) {
+                if (index < destinations.length) {
+                  final routeName = destinations[index].routeName;
+                  context.goNamed(routeName);
+                }
+              },
+              children: <Widget>[
+                _buildUserHeader(context, api.client.user),
+                ...destinations
+                    .map((d) => NavigationDrawerDestination(
+                          icon: Icon(d.icon),
+                          label: Text(d.label),
+                        ))
+                    .toList(),
+                _buildAboutBox(context),
+              ],
+            );
+          },
+          error: (error, stack) => Drawer(
+            child: Center(
+              child: Text('Error: $error'),
+            ),
           ),
-          Text(
+          loading: () => const Drawer(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
+  }
+
+  Widget _buildUserHeader(BuildContext context, User user) {
+    final fullName = user.fullName();
+    return UserAccountsDrawerHeader(
+        accountName: Text(fullName),
+        accountEmail: Text(user.email ?? ''),
+        currentAccountPicture: const CircleAvatar(
+          foregroundImage: AssetImage('assets/images/flutter_logo.png'),
+        ));
+  }
+
+  Widget _buildAboutBox(BuildContext context) {
+    return AboutListTile(
+      icon: const Icon(Icons.info),
+      applicationName: 'Versionary',
+      applicationVersion: '0.0.1',
+      applicationLegalese: '© 2021 Versionary',
+      aboutBoxChildren: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(top: 24),
+          child: Text(
             'Versionary is an adminstrative application for managing versionable content.',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDrawerItem(
-    BuildContext context, {
-    required IconData icon,
-    required String text,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(text),
-      onTap: onTap,
+        ),
+      ],
     );
   }
 }

@@ -13,14 +13,9 @@ flutter pub run build_runner watch
 Action Items:
 
 * Home Screen (information about the API and the logged in user)
-* Organization List
-  * List of organizations on the left
-  * Filter by Status
-  * Selected organization info on the right (large screen)
-  * Floating action button to add a new organization
 * Logged in User Icon (link to edit user screen)
 * User List
-  * List of Users on the left
+  * List of User Names on the left
   * Filter by Organization, Role, or Status
   * Selected user info on the right (large screen)
   * Floating action button to add a new user

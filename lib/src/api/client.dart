@@ -1,12 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:http/http.dart' as http;
 import 'package:versionary/src/about/about.dart';
-import 'package:versionary/src/client/exception.dart';
-import 'package:versionary/src/client/token.dart';
-import 'package:versionary/src/client/tuid.dart';
-import 'package:versionary/src/client/user.dart';
-import 'dart:convert';
+import 'package:versionary/src/api/exception.dart';
+import 'package:versionary/src/api/text_value.dart';
+import 'package:versionary/src/api/token.dart';
+import 'package:versionary/src/api/tuid.dart';
+import 'package:versionary/src/org/organization.dart';
+import 'package:versionary/src/user/user.dart';
 
 class ApiClient extends http.BaseClient {
   final http.Client _client;
@@ -142,6 +143,36 @@ class ApiClient extends http.BaseClient {
     clearIdentity();
   }
 
+  /// Send Password Reset Token, returning an error message if unsuccessful.
+  /// This is used to send a password reset email to the user.
+  Future<String> sendPasswordResetToken(String email) async {
+    final uri = Uri.https(hostName, '/v1/users/$email/resets');
+    final request = http.Request('POST', uri);
+    request.body = '{}';
+    try {
+      await receive(request);
+      return '';
+    } on ApiException catch (e) {
+      return e.message;
+    }
+  }
+
+  /// Reset Password, returning an error message if unsuccessful.
+  /// This is used to reset the user's password.
+  /// The token was previously sent to the user via email.
+  Future<String> resetPassword(
+      String email, String token, String password) async {
+    final uri = Uri.https(hostName, '/v1/users/$email/resets/$token');
+    final request = http.Request('PUT', uri);
+    request.body = jsonEncode({'password': password});
+    try {
+      await receive(request);
+      return '';
+    } on ApiException catch (e) {
+      return e.message;
+    }
+  }
+
   /// About: get basic information about the API, including which environment
   /// it is running in (dev, test, staging, prod).
   Future<About> about() async {
@@ -215,6 +246,82 @@ class ApiClient extends http.BaseClient {
     return tuid;
   }
 
+  /// Create an Organization
+  Future<Organization> createOrganization(Organization organization) async {
+    final uri = Uri.https(hostName, '/v1/organizations');
+    final request = http.Request('POST', uri);
+    request.body = jsonEncode(organization.toJson());
+    final json = await receive(request);
+    final newOrganization = Organization.fromJson(json);
+    return newOrganization;
+  }
+
+  /// Read an Organization
+  Future<Organization> readOrganization(String id) async {
+    final uri = Uri.https(hostName, '/v1/organizations/$id');
+    final request = http.Request('GET', uri);
+    final json = await receive(request);
+    final organization = Organization.fromJson(json);
+    return organization;
+  }
+
+  /// Update an Organization
+  Future<Organization> updateOrganization(Organization organization) async {
+    final uri = Uri.https(hostName, '/v1/organizations/${organization.id}');
+    final request = http.Request('PUT', uri);
+    request.body = jsonEncode(organization.toJson());
+    final json = await receive(request);
+    final updatedOrganization = Organization.fromJson(json);
+    return updatedOrganization;
+  }
+
+  /// Delete an Organization
+  Future<Organization> deleteOrganization(String id) async {
+    final uri = Uri.https(hostName, '/v1/organizations/$id');
+    final request = http.Request('DELETE', uri);
+    final json = await receive(request);
+    final deletedOrganization = Organization.fromJson(json);
+    return deletedOrganization;
+  }
+
+  /// List Organizations with optional filters and pagination, sorted by
+  /// createdAt timestamp, ascending or descending. Valid params are:
+  /// - reverse: most recent first (default false)
+  /// - limit: maximum number of results to return (default 100)
+  /// - offset: ID of the last item received (default null=first/last)
+  /// - status: pending, enabled, or disabled (default null=all)
+  Future<List<Organization>> listOrganizations(
+      Map<String, String> params) async {
+    final uri = Uri.https(hostName, '/v1/organizations', params);
+    final request = http.Request('GET', uri);
+    final list = await receiveList(request);
+    final List<Organization> organizations =
+        list.map((o) => Organization.fromJson(o)).toList();
+    return organizations;
+  }
+
+  /// List all Organization names as ID/Name key/value pairs, sorted by Name
+  /// This is used to populate a dropdown list of Organizations.
+  Future<List<TextValue>> listOrganizationNames() async {
+    final uri =
+        Uri.https(hostName, '/v1/organization_names', {'sorted': 'true'});
+    final request = http.Request('GET', uri);
+    final list = await receiveList(request);
+    final List<TextValue> organizations =
+        list.map((o) => TextValue.fromJson(o)).toList();
+    return organizations;
+  }
+
+  /// Create a User
+  Future<User> createUser(User user) async {
+    final uri = Uri.https(hostName, '/v1/users');
+    final request = http.Request('POST', uri);
+    request.body = jsonEncode(user.toJson());
+    final json = await receive(request);
+    final newUser = User.fromJson(json);
+    return newUser;
+  }
+
   /// Read a User
   Future<User> readUser(String id) async {
     final uri = Uri.https(hostName, '/v1/users/$id');
@@ -222,5 +329,52 @@ class ApiClient extends http.BaseClient {
     final json = await receive(request);
     final user = User.fromJson(json);
     return user;
+  }
+
+  /// Update a User
+  Future<User> updateUser(User user) async {
+    final uri = Uri.https(hostName, '/v1/users/${user.id}');
+    final request = http.Request('PUT', uri);
+    request.body = jsonEncode(user.toJson());
+    final json = await receive(request);
+    final updatedUser = User.fromJson(json);
+    return updatedUser;
+  }
+
+  /// Delete a User
+  Future<User> deleteUser(String id) async {
+    final uri = Uri.https(hostName, '/v1/users/$id');
+    final request = http.Request('DELETE', uri);
+    final json = await receive(request);
+    final deletedUser = User.fromJson(json);
+    return deletedUser;
+  }
+
+  /// List Users with optional filters and pagination, sorted by
+  /// createdAt timestamp, ascending or descending. Valid params are:
+  /// - reverse: most recent first (default false)
+  /// - limit: maximum number of results to return (default 100)
+  /// - offset: ID of the last item received (default null=first/last)
+  /// - status: pending, enabled, or disabled (default null=all)
+  /// - org: Organization ID (default null=all)
+  /// - role: admin (default null=all)
+  /// - email: email address (default null=all)
+  Future<List<User>> listUsers(Map<String, String> params) async {
+    final uri = Uri.https(hostName, '/v1/users', params);
+    final request = http.Request('GET', uri);
+    final list = await receiveList(request);
+    final List<User> users = list.map((u) => User.fromJson(u)).toList();
+    return users;
+  }
+
+  /// List all User names as ID/Name key/value pairs, sorted by Name
+  /// This can be used to populate a dropdown list of Users.
+  Future<List<TextValue>> listUserNames() async {
+    final uri = Uri.https(hostName, '/v1/user_names', {'sorted': 'true'});
+    final request = http.Request('GET', uri);
+    final list = await receiveList(request);
+    final List<TextValue> users =
+        list.map((u) => TextValue.fromJson(u)).toList();
+    return users;
   }
 }

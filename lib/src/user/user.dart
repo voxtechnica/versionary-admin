@@ -1,4 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:versionary/src/api/api.dart';
+import 'package:versionary/src/api/text_value.dart';
+
 part 'user.g.dart';
 
 @JsonSerializable()
@@ -43,6 +47,21 @@ class User {
 
   Map<String, dynamic> toJson() => _$UserToJson(this);
 
+  /// Returns the user's full name.
+  String fullName() {
+    String name = '';
+    if (givenName != null && givenName!.isNotEmpty) {
+      name += givenName!;
+    }
+    if (familyName != null && familyName!.isNotEmpty) {
+      if (name.isNotEmpty) {
+        name += ' ';
+      }
+      name += familyName!;
+    }
+    return name;
+  }
+
   /// Returns true if the user has the specified role.
   bool hasRole(String role) {
     if (roles == null || roles!.isEmpty) {
@@ -73,4 +92,14 @@ class User {
     }
     return '$name <$address>';
   }
+}
+
+/// userNamesProvider returns a list of TextValue objects containing the user's
+/// ID and full name with email address.
+@riverpod
+Future<List<TextValue>> userNames(UserNamesRef ref) {
+  return ref.watch(apiNotifierProvider).when(
+      data: (api) => api.client.listUserNames(),
+      error: (e, s) => Future.value(List.empty()),
+      loading: () => Future.value(List.empty()));
 }

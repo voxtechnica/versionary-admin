@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:versionary/src/client/client.dart';
+import 'package:versionary/src/api/client.dart';
 
 part 'api.g.dart';
 

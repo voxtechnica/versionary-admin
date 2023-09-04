@@ -8,7 +8,7 @@ class CounterView extends ConsumerStatefulWidget {
   const CounterView({super.key, required this.title});
 
   final String title;
-  static const routeName = '/counter';
+  static const routeName = 'counter';
 
   @override
   CounterViewState createState() => CounterViewState();
@@ -40,7 +40,9 @@ class CounterViewState extends ConsumerState<CounterView> {
           ),
         ],
       ),
-      drawer: const NavDrawer(),
+      drawer: const NavDrawer(
+        currentRouteName: CounterView.routeName,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => ref.read(counterProvider.notifier).increment(),
         tooltip: 'Increment',

@@ -74,7 +74,7 @@ class HostNameDialog extends StatelessWidget {
           autofocus: true,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
-            hintText: 'api.versionary.com',
+            hintText: 'api.versionary.net',
           ),
           validator: (value) => validateHostName(value),
         ),
@@ -97,9 +97,8 @@ class HostNameDialog extends StatelessWidget {
   }
 }
 
-/// ValidateHostName is a validator that checks if the host name is valid.
-/// A valid host name is not empty, does not contain spaces, and can be parsed
-/// as a URI.
+/// validateHostName checks if the host name is valid. A valid host name is not
+/// empty, does not contain spaces, and can be parsed as a URI.
 String? validateHostName(String? hostName) {
   if (hostName == null || hostName.isEmpty) {
     return 'Required';

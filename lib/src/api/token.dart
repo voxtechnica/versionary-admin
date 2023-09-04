@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:versionary/src/client/user.dart';
+import 'package:versionary/src/user/user.dart';
 part 'token.g.dart';
 
 @JsonSerializable()

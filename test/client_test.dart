@@ -1,8 +1,8 @@
 import 'package:test/test.dart';
 import 'package:versionary/src/about/about.dart';
-import 'package:versionary/src/client/client.dart';
-import 'package:versionary/src/client/exception.dart';
-import 'package:versionary/src/client/tuid.dart';
+import 'package:versionary/src/api/client.dart';
+import 'package:versionary/src/api/exception.dart';
+import 'package:versionary/src/api/tuid.dart';
 
 void main() {
   // Create an API Client for testing

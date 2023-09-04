@@ -32,7 +32,7 @@ Map<String, dynamic> _$AboutToJson(About instance) => <String, dynamic>{
 // RiverpodGenerator
 // **************************************************************************
 
-String _$aboutApiHash() => r'3478917710d9337595417bc23045190710437707';
+String _$aboutApiHash() => r'2e3b9730ad2855eeeaa785e12f2d1edf38d39f00';
 
 /// aboutApiProvider is an AutoDisposeFutureProvider<About> that uses aboutApi
 /// as the provider function. It is used by the AboutView widget.

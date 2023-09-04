@@ -58,11 +58,7 @@ class VersionaryApp extends ConsumerWidget {
     }
 
     // Show the login screen if the API client is not authenticated.
-    if (!api.isLoading &&
-        !api.hasError &&
-        api.hasValue &&
-        api.value != null &&
-        !api.value!.isAdmin) {
+    if (api.hasValue && api.value != null && !api.value!.isAdmin) {
       return MaterialApp(
         title: 'Versionary',
         theme: ThemeData(),
@@ -77,8 +73,12 @@ class VersionaryApp extends ConsumerWidget {
     // Show the main application to authenticated administrators.
     return MaterialApp.router(
       title: 'Versionary',
-      theme: ThemeData(),
-      darkTheme: ThemeData.dark(),
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
+      darkTheme: ThemeData.dark(
+        useMaterial3: true,
+      ),
       themeMode: themeMode,
       restorationScopeId: 'app',
       debugShowCheckedModeBanner: false,

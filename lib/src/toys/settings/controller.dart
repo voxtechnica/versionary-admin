@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:versionary/src/client/client.dart';
+import 'package:versionary/src/api/client.dart';
 import 'service.dart';
 
 /// SettingsController is a class that many Widgets can interact with to read,
